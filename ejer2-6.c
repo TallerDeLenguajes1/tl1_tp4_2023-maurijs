@@ -19,6 +19,7 @@ void mostrarTarea(ListaTareas Tareas);
 void verificarTareas(ListaTareas *TareasP, ListaTareas *TareasR, int cant);
 TAREA buscarTareaID(ListaTareas *doblePTarea, int id, int cant);
 TAREA buscarTareaPalabra(ListaTareas *doblePTarea, int cant, char palabra[]);
+int menu();
 
 int main() 
 {
@@ -80,60 +81,66 @@ int main()
     }
     sleep(1);
 
-    printf("\n=============BUSQUEDA POR ID=========================\n");
-    
-    //BUSQUEDA DE TAREAS POR ID
-    
+    int opcion = menu();
+
     TAREA tareaBuscada;
-    printf("\nIngrese el ID de la tarea a buscar\n");
-    
-    scanf("%d", &id);
-    printf("\nBuscamos en tareas pendientes:\n");
-    
-    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
-    if (tareaBuscada.TareaID == -1 )
+    switch (opcion)
     {
-        printf("\nNo se encuentra en tareas pendientes, buscamos en tareas realizadas\n");
-        printf("\nBuscamos en tareas realizadas:\n");
+    case 1:
+        printf("\n=============BUSQUEDA POR ID=========================\n");
     
-        tareaBuscada = buscarTareaID(TareasRealizadas, id, cant_tarea);
-        if (tareaBuscada.TareaID != -1)
+        printf("\nIngrese el ID de la tarea a buscar\n");
+        
+        scanf("%d", &id);
+        printf("\nBuscamos en tareas pendientes:\n");
+        
+        tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
+        if (tareaBuscada.TareaID == -1 )
         {
-            printf("\nSe encontro en tareas realizadas\n");
-            mostrarTarea(&tareaBuscada);
+            printf("\nNo se encuentra en tareas pendientes, buscamos en tareas realizadas\n");
+            printf("\nBuscamos en tareas realizadas:\n");
+        
+            tareaBuscada = buscarTareaID(TareasRealizadas, id, cant_tarea);
+            if (tareaBuscada.TareaID != -1)
+            {
+                printf("\nSe encontro en tareas realizadas\n");
+                mostrarTarea(&tareaBuscada);
+            } else {
+                printf("\nNo existe ninguna tarea con ese ID\n");
+            }   
         } else {
-            printf("\nNo existe ninguna tarea con ese ID\n");
-        }   
-    } else {
-        printf("\nSe encontro en tareas pendientes\n");
-        mostrarTarea(&tareaBuscada);
-    }
-    sleep(2);
-
-    printf("\n=============BUSQUEDA POR PALABRA=========================\n");
-    //BUSQUEDA DE TAREAS POR PALABRA
-    printf("\nIngrese la palabra de la tarea a buscar\n");
-    char palabra[15];
-    scanf("%s", palabra);
-
-    printf("\nBuscamos en tareas pendientes:\n");
-    tareaBuscada = buscarTareaPalabra(TareasPendientes, cant_tarea, palabra);
-    if (tareaBuscada.TareaID == -1 )
-    {
-        printf("\nNo se encuentra en tareas pendientes, buscamos en tareas realizadas\n");
-        printf("\nBuscamos en tareas realizadas:\n");
+            printf("\nSe encontro en tareas pendientes\n");
+            mostrarTarea(&tareaBuscada);
+        }
+    break;
     
-        tareaBuscada = buscarTareaPalabra(TareasRealizadas, cant_tarea, palabra);
-        if (tareaBuscada.TareaID != -1)
+    case 2:
+        printf("\n=============BUSQUEDA POR PALABRA=========================\n");
+        //BUSQUEDA DE TAREAS POR PALABRA
+        printf("\nIngrese la palabra de la tarea a buscar\n");
+        char palabra[15];
+        scanf("%s", palabra);
+
+        printf("\nBuscamos en tareas pendientes:\n");
+        tareaBuscada = buscarTareaPalabra(TareasPendientes, cant_tarea, palabra);
+        if (tareaBuscada.TareaID == -1 )
         {
-            printf("\nSe encontro en tareas realizadas\n");
-            mostrarTarea(&tareaBuscada);
+            printf("\nNo se encuentra en tareas pendientes, buscamos en tareas realizadas\n");
+            printf("\nBuscamos en tareas realizadas:\n");
+
+            tareaBuscada = buscarTareaPalabra(TareasRealizadas, cant_tarea, palabra);
+            if (tareaBuscada.TareaID != -1)
+            {
+                printf("\nSe encontro en tareas realizadas\n");
+                mostrarTarea(&tareaBuscada);
+            } else {
+                printf("\nNo existe ninguna tarea con esa palabra\n");
+            }   
         } else {
-            printf("\nNo existe ninguna tarea con esa palabra\n");
-        }   
-    } else {
-        printf("\nSe encontro en tareas pendientes\n");
-        mostrarTarea(&tareaBuscada);
+            printf("\nSe encontro en tareas pendientes\n");
+            mostrarTarea(&tareaBuscada);
+        }
+    break;
     }
 
     //LIBERAMOS MEMORIA
@@ -145,6 +152,14 @@ int main()
 //DECLARACION DE FUNCIONES 
 
 //FUNCIONES DE MEMORIA
+int menu()
+{
+    int opcion;
+    printf("\n============MENU==========\n");
+    printf("0-Salir del programa\n1- Busqueda por ID\n2-Busqueda por palabra clave\n");
+    scanf("%d", &opcion);  
+}
+
 void asignarMemoria(ListaTareas* doblePTareas, int cant)
 {
     for (int i = 0; i < cant; i++)
@@ -161,7 +176,6 @@ void liberarMemoria(ListaTareas *doblePTareas, int cant)
     }    
 }
 //======================================================
-
 void cargarTarea(ListaTareas Tarea, int id)
 {
     Tarea->TareaID = id;
