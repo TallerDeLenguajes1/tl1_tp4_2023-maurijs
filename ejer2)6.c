@@ -17,13 +17,13 @@ void liberarMemoria(ListaTareas *doblePTareas, int cant);
 void cargarTarea(ListaTareas Tarea, int id);
 void mostrarTarea(ListaTareas Tareas);
 void verificarTareas(ListaTareas *TareasP, ListaTareas *TareasR, int cant);
-
+TAREA buscarTareaID(ListaTareas *doblePTarea, int id, int cant);
 
 int main() 
 {
     ListaTareas* TareasPendientes = NULL;
     ListaTareas* TareasRealizadas = NULL;
-    int cant_tarea;
+    int cant_tarea, id;
     printf("\nIngresar la cantidad de tareas a realizar\n");
     scanf("%d", &cant_tarea);
     fflush(stdin);
@@ -63,6 +63,19 @@ int main()
         sleep(1);
     }
     sleep(1);
+
+    TAREA tareaBuscada;
+  /*  printf("\nIngrese el ID de la tarea a buscar\n");
+    scanf("%d", &id);
+    printf("\nBuscamos en tareas pendientes:\n");
+    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
+    printf("\nBuscamos en tareas realizadas:\n");
+    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
+    if (tareaBuscada.TareaID != -1 )
+    {
+        mostrarTarea(&tareaBuscada);
+    } */
+    
 
     liberarMemoria(TareasPendientes, cant_tarea);
     liberarMemoria(TareasRealizadas, cant_tarea);
@@ -136,19 +149,21 @@ void verificarTareas(ListaTareas* TareasP, ListaTareas* TareasR, int cant)
 }
 
 
-buscarTarea(ListaTareas* doblePTarea,int id, int cant)
+/*Cree un nuevo branch llamado busca-tarea e implemente una función de
+búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve
+la tarea solicitada.*/
+
+/*TAREA buscarTareaID(ListaTareas* doblePTarea,int id, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
         if (doblePTarea[i]->TareaID == id)
         {
-            return doblePTarea[i];
+            return *doblePTarea[i];
         }
     }
-
-    printf("\nNo se encontro la tarea\n");
-    return 0;
-}
-/*Cree un nuevo branch llamado busca-tarea e implemente una función de
-búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve
-la tarea solicitada.*/
+    TAREA tareaNoEncontrada;
+    tareaNoEncontrada.TareaID = -1; //o cualquier otro valor que indique que la tarea no fue encontrada
+    printf("\nNo se encontro la tarea de id = %d\n", id);
+    return tareaNoEncontrada;
+}*/
