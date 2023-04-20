@@ -46,37 +46,74 @@ int main()
     
     verificarTareas(TareasPendientes, TareasRealizadas, cant_tarea);
 
-    printf("\nMostramos las Tareas pendientes:\n");
+    printf("\n==================Tareas pendientes=======================\n");
     for (int i = 0; i < cant_tarea; i++)
     {
         printf("Tarea P %d:\n", i + 1);
+        if (TareasPendientes[i] !=NULL)
+        {
+            mostrarTarea(TareasPendientes[i]);
+        } else {
+            printf("\nTarea no realizada\n");
+        }
+        
+        
         mostrarTarea(TareasPendientes[i]);
         sleep(1);
     }
     sleep(1);
 
-    printf("\nMostramos las Tareas Realizadas\n");
+    printf("\n==================Tareas Realizadas========================\n");
     for (int i = 0; i < cant_tarea; i++)
     {
         printf("Tarea R %d:\n", i + 1);
+        if (TareasRealizadas[i] != NULL)
+        {
         mostrarTarea(TareasRealizadas[i]);
+        } else {
+          printf("\nTarea no realizada\n");
+        }
+        
+        
         sleep(1);
     }
     sleep(1);
 
+    printf("\n===========================BUSQUEDA=========================\n");
+    
+    //BUSQUEDA DE TAREAS
+    
     TAREA tareaBuscada;
-  /*  printf("\nIngrese el ID de la tarea a buscar\n");
+    printf("\nIngrese el ID de la tarea a buscar\n");
+    
     scanf("%d", &id);
     printf("\nBuscamos en tareas pendientes:\n");
-    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
-    printf("\nBuscamos en tareas realizadas:\n");
-    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
-    if (tareaBuscada.TareaID != -1 )
-    {
-        mostrarTarea(&tareaBuscada);
-    } */
     
+    tareaBuscada = buscarTareaID(TareasPendientes, id, cant_tarea);
 
+    if (tareaBuscada.TareaID == -1 )
+    {
+        printf("\nNo se encuentra en tareas pendientes, buscamos en tareas realizadas\n");
+        printf("\nBuscamos en tareas realizadas:\n");
+    
+        tareaBuscada = buscarTareaID(TareasRealizadas, id, cant_tarea);
+        
+        if (tareaBuscada.TareaID != -1)
+        {
+            printf("\nSe encontro en tareas realizadas\n");
+            mostrarTarea(&tareaBuscada);
+        } else {
+            printf("\nNo existe ninguna tarea con ese ID\n");
+        }
+        
+        
+    } else {
+        printf("\nSe encontro en tareas pendientes\n");
+        mostrarTarea(&tareaBuscada);
+    }
+
+    //LIBERAMOS MEMORIA
+    
     liberarMemoria(TareasPendientes, cant_tarea);
     liberarMemoria(TareasRealizadas, cant_tarea);
     return 0;
@@ -84,8 +121,7 @@ int main()
 
 //DECLARACION DE FUNCIONES 
 
-//funciones de memoria
-
+//FUNCIONES DE MEMORIA
 void asignarMemoria(ListaTareas* doblePTareas, int cant)
 {
     for (int i = 0; i < cant; i++)
@@ -101,7 +137,7 @@ void liberarMemoria(ListaTareas *doblePTareas, int cant)
         free(doblePTareas[i]);
     }    
 }
-//================================================
+//======================================================
 
 void cargarTarea(ListaTareas Tarea, int id)
 {
@@ -124,7 +160,7 @@ void mostrarTarea(ListaTareas Tareas)
     {
     printf("\nDescripcion de la tarea: %s\n", Tareas->Descripcion);
     printf("\nDuracion de la tarea: %d\n", Tareas->Duracion);
-    printf("\nID: %d\n",Tareas->TareaID);
+    printf("\nID: %d\n\n",Tareas->TareaID);
     }
 }
 
@@ -152,18 +188,23 @@ void verificarTareas(ListaTareas* TareasP, ListaTareas* TareasR, int cant)
 /*Cree un nuevo branch llamado busca-tarea e implemente una función de
 búsqueda de tarea por nro. de id de nombre BuscarTarea. La misma devuelve
 la tarea solicitada.*/
-
-/*TAREA buscarTareaID(ListaTareas* doblePTarea,int id, int cant)
+TAREA buscarTareaID(ListaTareas* doblePTarea,int id, int cant)
 {
+    printf("\nfuncion buscarTareaID\n");
     for (int i = 0; i < cant; i++)
     {
-        if (doblePTarea[i]->TareaID == id)
+        if (doblePTarea[i] != NULL)
         {
-            return *doblePTarea[i];
+            if (doblePTarea[i]->TareaID == id)
+            {
+                printf("\nSe encontro el id que coincide\n");
+                return *doblePTarea[i];
+            }
         }
+        
     }
     TAREA tareaNoEncontrada;
     tareaNoEncontrada.TareaID = -1; //o cualquier otro valor que indique que la tarea no fue encontrada
     printf("\nNo se encontro la tarea de id = %d\n", id);
     return tareaNoEncontrada;
-}*/
+}
