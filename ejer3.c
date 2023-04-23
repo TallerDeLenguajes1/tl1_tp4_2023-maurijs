@@ -30,6 +30,7 @@ ListaTareas crearNodoTarea(ListaTareas LTareas, int id, char*descripcion, int du
 void verificarTareas(ListaTareas *TareasPendientes, ListaTareas *TareasRealizadas, int cant_tareas);
 void EliminarNodo(ListaTareas *ListaT, int id);
 void mostrarTareas(ListaTareas ListaT);
+void busquedaTarea(ListaTareas ListaT, int id);
 
 int main() 
 {
@@ -67,6 +68,14 @@ int main()
     mostrarTareas(TareasPendientes);
     printf("\n=============TAREAS REALIZADAS==============\n");
     mostrarTareas(TareasRealizadas);
+
+    int buscado;
+    printf("\nIngrese el id de la tarea a buscar: ");
+    scanf("%d", &buscado);
+    printf("\nBuscamos en Tareas Pendientes\n");
+    busquedaTarea(TareasPendientes, buscado);
+    printf("\nBuscamos en Tareas Realizadas\n");
+    busquedaTarea(TareasRealizadas, buscado);
 
     liberarMemoria(TareasPendientes);
     liberarMemoria(TareasRealizadas);
@@ -169,4 +178,21 @@ void mostrarTareas(ListaTareas ListaT)
         printf("Duracion: %d\n\n", aux->Tarea.Duracion);
         aux = aux->Siguiente;
     }
+}
+void busquedaTarea(ListaTareas ListaT, int id) 
+{
+    ListaTareas aux = ListaT;
+    while (aux)
+    {
+        if (aux->Tarea.TareaID == id )
+        {
+            printf("\nTarea Encontrada");
+            printf("\nID: %d", id);
+            printf("\nDescripcion: %s", aux->Tarea.Descripcion);
+            printf("\nDuracion: %d", aux->Tarea.Duracion);
+            return;
+        }
+        aux = aux->Siguiente;
+    }
+    printf("\nNo se encontro la tarea en esta lista\n");
 }
