@@ -31,7 +31,7 @@ void verificarTareas(ListaTareas *TareasPendientes, ListaTareas *TareasRealizada
 void EliminarNodo(ListaTareas *ListaT, int id);
 int busquedaTarea(ListaTareas ListaT, int id);
 void mostrarDatos(ListaTareas ListaT);
-void opcionesMover(int lista);
+int opcionesMover(int lista);
 int menu();
 int opcionesTarea();
 
@@ -89,7 +89,7 @@ int main()
             switch (opcion)
             {
             case 1:
-                resultado = busquedaTarea(TareasPendientes, id);
+                resultado = busquedaTarea(TareasPendientes, id); //Para saber si existe una tarea con ese id
                 break;
             case 2:
                 resultado = busquedaTarea(TareasRealizadas, id);
@@ -100,32 +100,41 @@ int main()
             }
             if (resultado)
             {
-                opcionesMover(opcion);
-                
-            } else
-            {
+                lista = opcionesMover(opcion);    
+            } else {
                 printf("No se pudo encontrar la tarea con ese id\n");
             }
             
             
-            switch (opcion)
+            switch (opcion) // Lista donde pertenece la tarea
             {
-            case 1:
-                if (lista == 1)
+            case 1:             // Seleccione tareas pendientes
+                if (lista == 1) //Movere la tarea a tareas realizadas
                 {
-                    EliminarNodo(TareasPendientes, id);
-                } else if (lista == 2)
+                    cambiarTareas(TareasPendientes, TareasRealizadas, id);
+                } else if (lista == 2) //Movere la tarea a tareas en proceso
                 {
-                    EliminarNodo(TareasRealizadas, id);
+                    cambiarTareas(TareasPendientes, TareasEnProceso, id);
                 } 
-                else
-                {
-                   EliminarNodo(TareasEnProceso, id);
-                }
                 break;  
-            case 2:
-                opcionesMover(lista);
+            case 2:             // Seleccione tareas realizadas
+                if (lista == 1) //Movere la tarea a tareas pendientes
+                {
+                    cambiarTareas(TareasRealizadas, TareasPendientes, id);
+                } else if (lista == 2) //Movere la tarea a tareas en proceso
+                {
+                    cambiarTareas(TareasRealizadas, TareasEnProceso, id);
+                } 
+                break;
 
+            case 3:             // Seleccione tareas en proceso
+                if (lista == 1) //Movere la tarea a tareas pendientes
+                {
+                    cambiarTareas(TareasEnProceso, TareasPendientes, id);
+                } else if (lista == 2) //Movere la tarea a tareas realizadas
+                {
+                    cambiarTareas(TareasEnProceso, TareasRealizadas, id);
+                } 
                 break;
             }
             break;
@@ -158,8 +167,9 @@ int opcionTareas()
     return opcion;
 }
 
-void opcionesMover(int opcion)
+int opcionesMover(int opcion)
 {
+    int lista;
     printf("\n A que lista desea mover la tarea?\n");
     if (opcion == 1)
     {
@@ -171,6 +181,8 @@ void opcionesMover(int opcion)
     {
         printf("1-Tareas Pendientes\n2-Tareas Realizadas");
     }
+    scanf("%d", &lista);
+    return lista;
 }
 
 //============================================================================
@@ -304,14 +316,3 @@ void liberarMemoria(ListaTareas LTareas)
         aux = LTareas;
     }
 }
-
-/*
-i) Liste todas las tareas cargadas en todas las categorías (Pendientes, En Proceso y
-Realizadas), mostrando todos sus datos.
-ii) A continuación, consulte al usuario que tarea desea 'seleccionar', indicandolo por id
-de tarea.
-iii) Con la tarea seleccionada, el usuario debe elegir si desea mover la tarea a alguna de
-las otras dos listas, eliminar la tarea o no hacer nada.
-iv) A continuación, pregunte al usuario si desea modificar otra tarea, y en tal caso vuelva
-al punto i. Caso contrario, liste todas las tareas e imprima por pantalla los datos
-obtenidos con la función MostarDatos de los tres estados. */
