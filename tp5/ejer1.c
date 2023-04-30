@@ -1,11 +1,4 @@
-/*Cree un nuevo branch llamado lista-enlazada donde tendrá que reemplazar la
-implementación que realizó con listas enlazadas, para ello en vez de tener 2 arreglos de
-tareas ahora tendrá 2 listas enlazadas (una para las tareas pendientes y otra para las tareas
-realizadas) y cada vez que se marque como realizada tendrá que mover la tarea de la lista de
-tareas pendientes a la lista de tareas realizada
-Tareas
-Cada empleado tiene un listado de tareas a realizar.
-Las estructuras de datos necesarias son las siguientes: */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +20,7 @@ typedef struct Nodo *ListaTareas;
 ListaTareas crearLista();
 ListaTareas crearNodoTarea(ListaTareas LTareas, int id, char*descripcion, int duracion);
 void liberarMemoria(ListaTareas LTareas);
-void verificarTareas(ListaTareas *TareasPendientes, ListaTareas *TareasRealizadas, int cant_tareas);
+void cambiarTareas(ListaTareas *ListaOrigen, ListaTareas *ListaDestino, int id);
 void EliminarNodo(ListaTareas *ListaT, int id);
 int busquedaTarea(ListaTareas ListaT, int id);
 void mostrarDatos(ListaTareas ListaT);
@@ -49,116 +42,135 @@ int main()
     TareasPendientes = crearLista();
     TareasRealizadas = crearLista();
     TareasEnProceso = crearLista();
-    int id;
-    int opcion = menu();
-    int lista;
-    while (opcion)
+    int id, decision, listaOrigen, listaDestino;
+    //Crear Tareas
+    do
     {
-        switch (opcion)
+    cant++;
+    buffer = (char *)malloc(sizeof(char) * 30);
+    printf("\nTAREA %d:", cant);
+    printf("\nIngresar descripcion:");
+    scanf("%29s", buffer);
+    fflush(stdin);
+    printf("Ingresar duracion:");
+    scanf("%d", &duracion);
+    TareasPendientes = crearNodoTarea(TareasPendientes, cant, buffer, duracion); 
+    free(buffer);
+    printf("Desea ingresar una nueva tarea?\n1-Si\n0-No\n");
+    scanf("%d", &opcion);
+    } while (opcion);
+
+    do
+    {
+        printf("Listado de Tareas:\n");
+        printf("\n=========Mostrando datos de Tareas Pendientes=========\n");
+        mostrarDatos(TareasPendientes);
+        sleep(1);
+        printf("\n=========Mostrando datos de Tareas Realizadas=========\n");
+        mostrarDatos(TareasRealizadas);
+        sleep(1);
+        printf("\n=========Mostrando datos de Tareas en Proceso=========\n");
+        mostrarDatos(TareasEnProceso);
+        sleep(1);
+
+        printf("\nIngrese la lista a la cual pertenece la tarea:\n");
+        printf("1-Tareas pendientes\n2-Tareas realizadas\n3-Tareas en proceso\n");
+        scanf("%d", &listaOrigen);
+        printf("\nIngrese el id de la tarea a seleccionar: ");
+
+        scanf("%d", &id);
+        switch (listaOrigen) //Para saber si existe una tarea con ese id
         {
         case 1:
-            cant++;
-            buffer = (char *)malloc(sizeof(char) * 30);
-            printf("\nTAREA %d:", cant);
-            printf("\nIngresar descripcion:");
-            scanf("%29s", buffer);
-            fflush(stdin);
-            printf("Ingresar duracion:");
-            scanf("%d", &duracion);
-            TareasPendientes = crearNodoTarea(TareasPendientes, cant, buffer, duracion); 
-            free(buffer);
-            printf("Desea ingresar una nueva tarea?\n1-Si\n2-No\n");
-            scanf("%d", &opcion);
+            resultado = busquedaTarea(TareasPendientes, id); 
             break;
-        
         case 2:
-            printf("Listado de Tareas:\n");
-            printf("\n=========Mostrando datos de Tareas Pendientes=========\n");
-            mostrarDatos(TareasPendientes);
-            printf("\n=========Mostrando datos de Tareas Realizadas=========\n");
-            mostrarDatos(TareasRealizadas);
-            printf("\n=========Mostrando datos de Tareas en Proceso=========\n");
-            mostrarDatos(TareasEnProceso);
-
-            printf("\nIngrese la lista a la cual pertenece la tarea:\n");
-            printf("1-Tareas pendientes\n2-Tareas realizadas\n3-Tareas en proceso");
-            scanf("%d", &opcion);
-
-            printf("\nIngrese el id de la tarea a seleccionar: ");
-            scanf("%d", &id);
-            switch (opcion)
-            {
-            case 1:
-                resultado = busquedaTarea(TareasPendientes, id); //Para saber si existe una tarea con ese id
-                break;
-            case 2:
-                resultado = busquedaTarea(TareasRealizadas, id);
-                break;
-            case 3:
-                resultado = busquedaTarea(TareasEnProceso, id);
-                break;
-            }
-            if (resultado)
-            {
-                lista = opcionesMover(opcion);    
-            } else {
-                printf("No se pudo encontrar la tarea con ese id\n");
-            }
+            resultado = busquedaTarea(TareasRealizadas, id);
+            break;
+        case 3:
+            resultado = busquedaTarea(TareasEnProceso, id);
+            break;
+        }
+        
+        //verifico si existe la tarea
+        decision = 0;
+        if (resultado)
+        {
+            printf("\nSeleccione que hacer con la tarea:\n1-mover la tarea\n2-Eliminar la tarea\n3-No hacer nada\n");
+            scanf("%d",&decision);
             
-            
-            switch (opcion) // Lista donde pertenece la tarea
+            if (decision == 2)  {
+                //elimino la tarea de la lista 
+                if (listaOrigen == 1) { // si la tarea se encuentra en Tareas pendientes
+                    EliminarNodo(&TareasPendientes, id);
+                } else if (listaOrigen == 2) {
+                    EliminarNodo(&TareasRealizadas, id);
+                } else {
+                    EliminarNodo(&TareasEnProceso, id);
+                }   
+            } 
+        }
+
+        if (decision == 1)
+        {
+            listaDestino = opcionesMover(listaOrigen);   //Elijo a que lista mover esa tarea  
+            // Segun la lista donde esta la tarea que seleccione, me apareceran las opciones de listas
+            switch (listaOrigen) 
             {
             case 1:             // Seleccione tareas pendientes
-                if (lista == 1) //Movere la tarea a tareas realizadas
+                if (listaDestino == 1) //Movere la tarea a tareas realizadas
                 {
-                    cambiarTareas(TareasPendientes, TareasRealizadas, id);
-                } else if (lista == 2) //Movere la tarea a tareas en proceso
-                {
-                    cambiarTareas(TareasPendientes, TareasEnProceso, id);
+                    cambiarTareas(&TareasPendientes, &TareasRealizadas, id); // (Origen, destino, id)
+                } else {
+                    cambiarTareas(&TareasPendientes, &TareasEnProceso, id);
                 } 
                 break;  
             case 2:             // Seleccione tareas realizadas
-                if (lista == 1) //Movere la tarea a tareas pendientes
+                if (listaDestino == 1) //Movere la tarea a tareas pendientes
                 {
-                    cambiarTareas(TareasRealizadas, TareasPendientes, id);
-                } else if (lista == 2) //Movere la tarea a tareas en proceso
-                {
-                    cambiarTareas(TareasRealizadas, TareasEnProceso, id);
+                    cambiarTareas(&TareasRealizadas, &TareasPendientes, id);
+                } else {               //Movere la tarea a tareas en proceso
+                    cambiarTareas(&TareasRealizadas, &TareasEnProceso, id);
                 } 
                 break;
 
             case 3:             // Seleccione tareas en proceso
-                if (lista == 1) //Movere la tarea a tareas pendientes
+                if (listaDestino == 1) //Movere la tarea a tareas pendientes
                 {
-                    cambiarTareas(TareasEnProceso, TareasPendientes, id);
-                } else if (lista == 2) //Movere la tarea a tareas realizadas
-                {
-                    cambiarTareas(TareasEnProceso, TareasRealizadas, id);
+                    cambiarTareas(&TareasEnProceso, &TareasPendientes, id);
+                } else { //Movere la tarea a tareas realizadas
+                    cambiarTareas(&TareasEnProceso, &TareasRealizadas, id);
                 } 
                 break;
             }
-            break;
-        }
-        opcion = menu();
-    }
+        } 
+        printf("\nDesea seleccionar otra tarea?\n1-Si\n0-No\n");
+        scanf("%d", &opcion);
+    } while (opcion);
+
+    printf("\n=========Mostrando datos de Tareas Pendientes=========\n");
+    mostrarDatos(TareasPendientes);
+    sleep(1);
+    printf("\n=========Mostrando datos de Tareas Realizadas=========\n");
+    mostrarDatos(TareasRealizadas);
+    sleep(1);
+    printf("\n=========Mostrando datos de Tareas en Proceso=========\n");
+    mostrarDatos(TareasEnProceso);
+    sleep(1);
 
     liberarMemoria(TareasPendientes);
     liberarMemoria(TareasRealizadas);
-    return;
+    return 0;
 }
+      
+    
+
 
 //----------------DECLARACION DE FUNCIONES------------------------
 
 
 //================INTERFAZ DE USUARIO==============================
-int menu() 
-{
-    int opcion;
-    printf("\n===========MENU============\n");
-    printf("0-Salir del programa\n1-Ingresar nueva Tarea\n2-Modificar una tarea\n");
-    scanf("%d", &opcion);
-    return opcion;
-}
+
 int opcionTareas() 
 {
     printf("Opciones:\n1-Eliminar Tarea\n2-Mover a otra lista\n3-Volver\n");
@@ -167,22 +179,22 @@ int opcionTareas()
     return opcion;
 }
 
-int opcionesMover(int opcion)
+int opcionesMover(int listaOrigen)
 {
-    int lista;
+    int listaDestino;
     printf("\n A que lista desea mover la tarea?\n");
-    if (opcion == 1)
+    if (listaOrigen == 1)
     {
-        printf("1-Tareas Pendientes\n2-Tareas en Proceso");
-    } else if (opcion == 2)
+        printf("1-Tareas Realizadas\n2-Tareas en Proceso\n");
+    } else if (listaOrigen == 2)
     {
-        printf("1-Tareas Realizadas\n2-Tareas en Proceso");
+        printf("1-Tareas pendientes\n2-Tareas en Proceso\n");
     } else
     {
-        printf("1-Tareas Pendientes\n2-Tareas Realizadas");
+        printf("1-Tareas Pendientes\n2-Tareas Realizadas\n");
     }
-    scanf("%d", &lista);
-    return lista;
+    scanf("%d", &listaDestino);
+    return listaDestino;
 }
 
 //============================================================================
@@ -242,23 +254,19 @@ void EliminarNodo(ListaTareas*ListaT, int id) {
 //==================FUNCION PARA LISTA DE TAREAS=======================
 //Como es funcion void debo pasar doble puntero asi se modifiquen las cabeceras de las listas
 
-void verificarTareas(ListaTareas *TareasPendientes, ListaTareas *TareasRealizadas, int cant_tareas) 
-{          //equivalente a struct Nodo **
-    int i = 0;
-    while (i < cant_tareas && TareasPendientes != NULL)
-    {
-        int respuesta;
-
-        printf("Realizo la tarea %d?\n", cant_tareas);
-        printf("1-Si\n2-No\n");
-        scanf("%d", &respuesta);
-        if (respuesta == 1){          
-            *TareasRealizadas = crearNodoTarea(*TareasRealizadas, cant_tareas, (*TareasPendientes)->Tarea.Descripcion, (*TareasPendientes)->Tarea.Duracion);                                                     // i + 1 es el id
-            EliminarNodo(TareasPendientes, cant_tareas); // cant_tareas es el id
-            //Tambien es funcion void por lo que paso el puntero, estaria mal &TareasPendientes xq seria equivalente a Struct Nodo***
-        } 
-        cant_tareas--;
+void cambiarTareas(ListaTareas *ListaOrigen, ListaTareas *ListaDestino, int id) {
+    printf("\n====Funcion cambiar tareas===\n");
+    ListaTareas aux = *ListaOrigen;
+    while (aux != NULL) {
+        if (aux->Tarea.TareaID == id) {
+            *ListaDestino = crearNodoTarea(*ListaDestino, id, aux->Tarea.Descripcion, aux->Tarea.Duracion);
+            EliminarNodo(ListaOrigen, id);
+            printf("\nSe cambio de lista la tarea\n");
+            return;
+        }
+        aux = aux->Siguiente;
     }
+    printf("\nNo se pudo cambiar la tarea a la otra lista\n");
 }
 
 int busquedaTarea(ListaTareas ListaT, int id) 
@@ -276,29 +284,36 @@ int busquedaTarea(ListaTareas ListaT, int id)
         }
         aux = aux->Siguiente;
     }
-    printf("\nNo se encontro la tarea en esta lista\n");
+    printf("\nNo se encontro la tarea con ese id\n");
     return 0;
 }
 
 void mostrarDatos(ListaTareas ListaT)
 {
-    ListaTareas aux = ListaT;
-    int TiempoTotal = 0;
-    int cant_tareas = 0;
-    while (aux != NULL)
+    if (ListaT)
     {
-        sleep(1);
-        printf("ID: %d\n", aux->Tarea.TareaID);
-        printf("Descripcion: %s\n", aux->Tarea.Descripcion);
-        printf("Duracion: %d\n", aux->Tarea.Duracion);
-        aux = aux->Siguiente;
-        cant_tareas++;
-        TiempoTotal = TiempoTotal + aux->Tarea.Duracion;
+        ListaTareas aux = ListaT;
+        int TiempoTotal = 0;
+        int cant_tareas = 0;
+        while (aux != NULL)
+        {
+            sleep(1);
+            printf("ID: %d\n", aux->Tarea.TareaID);
+            printf("Descripcion: %s\n", aux->Tarea.Descripcion);
+            printf("Duracion: %d\n", aux->Tarea.Duracion);
+            TiempoTotal = TiempoTotal + aux->Tarea.Duracion;
+            aux = aux->Siguiente;
+            cant_tareas++;
+        }
+        printf("--------------------------------------------\n");
+        printf("Cantidad de tareas: %d\n", cant_tareas);
+        printf("Duracion total: %d\n", TiempoTotal);
+        printf("--------------------------------------------\n");
+    } 
+    else
+    {
+        printf("\nLista vacia\n");
     }
-    printf("--------------------------------------------\n");
-    printf("Cantidad de tareas: %d\n", cant_tareas);
-    printf("Duracion total: %d\n", TiempoTotal);
-    printf("--------------------------------------------\n");
 }
 //=================================================================
 
